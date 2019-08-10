@@ -15,16 +15,18 @@
 #include "crypto/dh_groups.h"
 #include "ieee802_11_defs.h"
 #include "sae.h"
+#include <stdio.h>
 
 
 int sae_set_group(struct sae_data *sae, int group)
 {
 	struct sae_temporary_data *tmp;
-
-	sae_clear_data(sae);
+	// CryptoWorkshop modification - It crash If we don't comment it out.
+	// sae_clear_data(sae);
 	tmp = sae->tmp = os_zalloc(sizeof(*tmp));
 	if (tmp == NULL)
 		return -1;
+
 
 	/* First, check if this is an ECC group */
 	tmp->ec = crypto_ec_init(group);
@@ -265,7 +267,7 @@ fail:
 }
 
 
-static int sae_test_pwd_seed_ecc(struct sae_data *sae, const u8 *pwd_seed,
+int sae_test_pwd_seed_ecc(struct sae_data *sae, const u8 *pwd_seed,
 				 const u8 *prime,
 				 const struct crypto_bignum *qr,
 				 const struct crypto_bignum *qnr,
@@ -421,8 +423,15 @@ static int get_random_qr_qnr(const u8 *prime, size_t prime_len,
 	return (*qr && *qnr) ? 0 : -1;
 }
 
+/*
+addr1: [length = 6] Macaddr of side 1
+addr2: [length = 6] Macaddr of side 2
+password, passwordlen: password for wifi I guess
+identifier: optional, we will pass nullptr
 
-static int sae_derive_pwe_ecc(struct sae_data *sae, const u8 *addr1,
+
+ */
+int sae_derive_pwe_ecc(struct sae_data *sae, const u8 *addr1,
 			      const u8 *addr2, const u8 *password,
 			      size_t password_len, const char *identifier)
 {

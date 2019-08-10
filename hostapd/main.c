@@ -29,6 +29,8 @@
 #include "config_file.h"
 #include "eap_register.h"
 #include "ctrl_iface.h"
+#include <stdio.h>
+#include "../src/common/sae.h"
 
 
 struct hapd_global {
@@ -673,6 +675,28 @@ int main(int argc, char *argv[])
 #ifdef CONFIG_DPP
 	hostapd_dpp_init_global(&interfaces);
 #endif /* CONFIG_DPP */
+
+	// CryptoWorkshop modification - call the vulnerable function from main, and then exit
+
+	// Set log level to maximal, useful for debugging
+	// wpa_debug_level = MSG_EXCESSIVE;
+
+	#define MY_CHOSEN_GROUP (19)
+	struct sae_data mocked_data;
+	mocked_data.group = MY_CHOSEN_GROUP;
+	sae_set_group(&mocked_data, MY_CHOSEN_GROUP);
+
+	u8 addr1[6] = {0,1,2,3,4,5};
+	u8 addr2[6] = {0,23,231,83,2,7};
+	u8 password[] = "Hello world!";
+
+
+	int result  = sae_derive_pwe_ecc(&mocked_data, addr1, addr2, password, sizeof(password), NULL);
+	printf("%d\n", result);
+	return 0;
+
+
+
 
 	for (;;) {
 		c = getopt(argc, argv, "b:Bde:f:hi:KP:sSTtu:vg:G:");

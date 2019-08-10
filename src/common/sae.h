@@ -75,4 +75,16 @@ int sae_check_confirm(struct sae_data *sae, const u8 *data, size_t len);
 u16 sae_group_allowed(struct sae_data *sae, int *allowed_groups, u16 group);
 const char * sae_state_txt(enum sae_state state);
 
+
+// CryptoWorkshop modification - export the function we attacks
+int sae_derive_pwe_ecc(struct sae_data *sae, const u8 *addr1,
+			      const u8 *addr2, const u8 *password,
+			      size_t password_len, const char *identifier);
+// CryptoWorkshop modification - Export this function so it'll be easier to find the branch
+int sae_test_pwd_seed_ecc(struct sae_data *sae, const u8 *pwd_seed,
+				 const u8 *prime,
+				 const struct crypto_bignum *qr,
+				 const struct crypto_bignum *qnr,
+				 struct crypto_bignum **ret_x_cand);
+
 #endif /* SAE_H */

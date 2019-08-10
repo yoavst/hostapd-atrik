@@ -1,3 +1,6 @@
+# CryptoWorkshop modification - We need this flag enabled.
+CONFIG_SAE = 1
+
 ifndef CC
 CC=gcc
 endif
